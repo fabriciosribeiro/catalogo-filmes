@@ -106,7 +106,7 @@ Rodapé com o logo do TMDB, o aviso "Este produto usa a API do TMDB mas não é 
 `page.tsx` converte `searchParams` → `Filters` → `discoverStreaming(filters, 1)`, que chama `/discover/movie` com:
 
 - `watch_region=BR`, `with_watch_monetization_types=flatrate`, `language=pt-BR`
-- `with_watch_providers` = IDs unidos por `|` (OU). Sem provedores selecionados, usa a lista de plataformas principais do Brasil (obtida de `/watch/providers/movie?watch_region=BR`, ordenada por `display_priority`, limitada às primeiras N; N definido no plano).
+- `with_watch_providers` = IDs unidos por `|` (OU). Sem provedores selecionados, usa a lista de plataformas principais do Brasil (obtida de `/watch/providers/movie?watch_region=BR`, ordenada por `display_priority`, limitada às 10 primeiras — as mesmas exibidas na faixa de plataformas).
 - `with_genres` = IDs unidos por `,` (E)
 - `primary_release_date.gte` / `.lte` a partir do ano
 - `sort_by`: popularidade → `popularity.desc`; nota → `vote_average.desc` com `vote_count.gte=200`; lançamento → `primary_release_date.desc`
