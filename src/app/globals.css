@@ -19,3 +19,11 @@ body {
   background: var(--color-bg);
   color: var(--color-fg);
 }
+
+/* Carrosséis horizontais: rolam por toque/trackpad sem exibir a barra nativa. */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

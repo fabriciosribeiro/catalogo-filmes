@@ -4,7 +4,11 @@ type Props = { genres: Genre[]; selected: number[]; onChange: (ids: number[]) =>
 
 export function GenreChips({ genres, selected, onChange }: Props) {
   return (
-    <div role="group" aria-label="Gêneros" className="-mx-4 flex gap-2 overflow-x-auto px-4 py-1">
+    <div
+      role="group"
+      aria-label="Gêneros"
+      className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 py-1 sm:flex-wrap sm:overflow-visible"
+    >
       {genres.map((genre) => {
         const isSelected = selected.includes(genre.id);
         return (
