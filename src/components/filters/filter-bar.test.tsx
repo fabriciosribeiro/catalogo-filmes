@@ -62,6 +62,11 @@ describe('FilterBar', () => {
     expect(nav.replace).toHaveBeenLastCalledWith('/?ano=2020-', { scroll: false });
   });
 
+  it('mostra no select um ano da URL fora da faixa listada', () => {
+    renderBar({ ...DEFAULT_FILTERS, yearFrom: 1905 });
+    expect(screen.getByLabelText('Ano inicial')).toHaveValue('1905');
+  });
+
   it('"Limpar filtros" só aparece com filtros ativos e volta para /', async () => {
     const { unmount } = renderBar();
     expect(screen.queryByRole('button', { name: 'Limpar filtros' })).not.toBeInTheDocument();

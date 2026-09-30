@@ -13,6 +13,14 @@ function years(): number[] {
   return Array.from({ length: current - FIRST_LISTED_YEAR + 1 }, (_, i) => current - i);
 }
 
+// Garante que um ano vindo da URL fora da faixa listada (ex.: ?ano=1905-) continue aparecendo
+// selecionado no <select>, mesmo que fora de 1920..ano atual.
+function yearsIncluding(selected: number | undefined): number[] {
+  const base = years();
+  if (selected === undefined || base.includes(selected)) return base;
+  return [...base, selected].sort((a, b) => b - a);
+}
+
 const selectClasses =
   'rounded-md bg-surface-2 px-2 py-1.5 text-sm focus-visible:outline-2 focus-visible:outline-accent';
 
@@ -30,7 +38,7 @@ export function YearRange({ yearFrom, yearTo, onChange }: Props) {
         onChange={(e) => onChange({ yearFrom: toNumber(e.target.value), yearTo })}
       >
         <option value="">Desde sempre</option>
-        {years().map((year) => (
+        {yearsIncluding(yearFrom).map((year) => (
           <option key={year} value={year}>
             {year}
           </option>
@@ -47,7 +55,7 @@ export function YearRange({ yearFrom, yearTo, onChange }: Props) {
         onChange={(e) => onChange({ yearFrom, yearTo: toNumber(e.target.value) })}
       >
         <option value="">Hoje</option>
-        {years().map((year) => (
+        {yearsIncluding(yearTo).map((year) => (
           <option key={year} value={year}>
             {year}
           </option>

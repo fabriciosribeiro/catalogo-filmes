@@ -37,7 +37,7 @@ export function TrailerModal({ trailerKey, title }: Props) {
             type="button"
             onClick={closeModal}
             aria-label="Fechar trailer"
-            className="px-2 text-sm text-muted hover:text-fg"
+            className="rounded-md bg-surface px-3 py-1.5 text-base font-semibold text-fg hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Fechar ✕
           </button>

@@ -12,6 +12,8 @@ export function SearchBox() {
   const [value, setValue] = useState(urlQuery);
   // último termo que ESTE componente enviou para a URL
   const lastSubmitted = useRef(urlQuery);
+  // página em que o usuário estava ao digitar por último (para cancelar o envio pendente após navegar)
+  const typedPathname = useRef(pathname);
 
   // A URL mudou por fora (Limpar filtros, voltar no histórico): sincroniza o campo.
   useEffect(() => {
@@ -35,9 +37,13 @@ export function SearchBox() {
   );
 
   useEffect(() => {
-    const timer = setTimeout(() => submit(value), SEARCH_DEBOUNCE_MS);
+    const timer = setTimeout(() => {
+      // o usuário navegou (ex.: clicou num card) antes do debounce disparar: o envio não é mais válido
+      if (pathname !== typedPathname.current) return;
+      submit(value);
+    }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [value, submit]);
+  }, [value, pathname, submit]);
 
   return (
     <form
@@ -55,7 +61,10 @@ export function SearchBox() {
         id="busca"
         type="search"
         value={value}
-        onChange={(event) => setValue(event.target.value)}
+        onChange={(event) => {
+          typedPathname.current = pathname;
+          setValue(event.target.value);
+        }}
         placeholder="Buscar filme…"
         autoComplete="off"
         className="w-full rounded-full bg-surface px-4 py-2 text-sm placeholder:text-muted focus-visible:outline-2 focus-visible:outline-accent"

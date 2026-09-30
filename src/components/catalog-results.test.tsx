@@ -24,6 +24,7 @@ describe('CatalogResults', () => {
 
     expect(discoverStreaming).toHaveBeenCalledWith({ ...DEFAULT_FILTERS, providers: [8] }, 1);
     expect(screen.getAllByRole('listitem')).toHaveLength(3);
+    expect(screen.getByRole('heading', { level: 2, name: 'Resultados' })).toBeInTheDocument();
   });
 
   it('catálogo vazio sugere limpar filtros', async () => {
@@ -42,6 +43,7 @@ describe('CatalogResults', () => {
     expect(discoverStreaming).not.toHaveBeenCalled();
     expect(screen.getAllByRole('listitem')).toHaveLength(8);
     expect(screen.queryByText(/termo mais específico/)).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Resultados' })).toBeInTheDocument();
   });
 
   it('busca com poucos resultados sugere refinar', async () => {

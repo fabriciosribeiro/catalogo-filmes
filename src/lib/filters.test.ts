@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_FILTERS,
   hasActiveFilters,
+  MAX_IDS_PER_FILTER,
   parseFilters,
   searchParamsFromQueryString,
   serializeFilters,
@@ -25,6 +26,12 @@ describe('parseFilters', () => {
 
   it('descarta IDs inválidos individualmente e remove duplicados', () => {
     expect(parseFilters({ p: '8,abc,-3,0,8.5,,119,8' }).providers).toEqual([8, 119]);
+  });
+
+  it('limita listas de IDs a MAX_IDS_PER_FILTER', () => {
+    const ids = Array.from({ length: 30 }, (_, i) => i + 1);
+    expect(parseFilters({ p: ids.join(',') }).providers).toEqual(ids.slice(0, MAX_IDS_PER_FILTER));
+    expect(parseFilters({ p: ids.join(',') }).providers).toHaveLength(20);
   });
 
   it('aceita intervalos de ano abertos', () => {

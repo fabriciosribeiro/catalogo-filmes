@@ -28,6 +28,7 @@ export async function CatalogResults({ filters, genres }: Props) {
     }
     return (
       <>
+        <h2 className="sr-only">Resultados</h2>
         <MovieGrid movies={movies} genres={genres} />
         {movies.length < FEW_RESULTS && (
           <p className="mt-8 text-center text-sm text-muted">
@@ -53,10 +54,13 @@ export async function CatalogResults({ filters, genres }: Props) {
     );
   }
   return (
-    <InfiniteMovieList
-      initialPage={firstPage}
-      queryString={serializeFilters(filters)}
-      genres={genres}
-    />
+    <>
+      <h2 className="sr-only">Resultados</h2>
+      <InfiniteMovieList
+        initialPage={firstPage}
+        queryString={serializeFilters(filters)}
+        genres={genres}
+      />
+    </>
   );
 }

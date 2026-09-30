@@ -19,6 +19,7 @@ export const DEFAULT_FILTERS: Filters = { providers: [], genres: [], sort: 'popu
 export const MIN_YEAR = 1900;
 export const MAX_YEAR = 2100;
 const MAX_QUERY_LENGTH = 100;
+export const MAX_IDS_PER_FILTER = 20;
 
 const idSchema = z.coerce.number().int().positive();
 const yearSchema = z.coerce.number().int().min(MIN_YEAR).max(MAX_YEAR);
@@ -36,7 +37,7 @@ function parseIdList(raw: string | undefined): number[] {
     const result = idSchema.safeParse(trimmed);
     return result.success ? [result.data] : [];
   });
-  return [...new Set(ids)];
+  return [...new Set(ids)].slice(0, MAX_IDS_PER_FILTER);
 }
 
 function parseYear(raw: string | undefined): number | undefined {

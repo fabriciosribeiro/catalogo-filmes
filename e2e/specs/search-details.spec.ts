@@ -19,7 +19,8 @@ test('busca um título e abre os detalhes com "Onde assistir"', async ({ page })
 
 test('ID de filme inválido ou inexistente mostra 404 amigável', async ({ page }) => {
   for (const path of ['/filme/abc', '/filme/-1', '/filme/999999']) {
-    await page.goto(path);
+    const response = await page.goto(path);
+    expect(response?.status()).toBe(404);
     await expect(page.getByText('Filme não encontrado')).toBeVisible();
   }
 });

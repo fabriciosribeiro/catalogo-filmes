@@ -102,6 +102,19 @@ describe('SearchBox', () => {
     expect(nav.replace).not.toHaveBeenCalled();
   });
 
+  it('não envia a busca pendente se o usuário navegar antes do debounce disparar', async () => {
+    const { user, input, view } = setup();
+    await user.type(input, 'dun');
+
+    // navegação para a página de detalhes (ex.: clique num card) antes dos 300ms
+    nav.pathname = '/filme/1';
+    view.rerender(<SearchBox />);
+
+    act(() => vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS));
+    expect(nav.replace).not.toHaveBeenCalledWith('/?q=dun', { scroll: false });
+    expect(nav.push).not.toHaveBeenCalledWith('/?q=dun');
+  });
+
   it('Enter busca imediatamente', async () => {
     const { user, input } = setup();
     await user.type(input, 'duna{Enter}');
