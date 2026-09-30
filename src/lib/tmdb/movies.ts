@@ -1,6 +1,6 @@
 import 'server-only';
 import type { Filters, SortOption } from '../filters';
-import { tmdbFetch } from './client';
+import { TmdbError, tmdbFetch } from './client';
 import {
   FEATURED_PROVIDER_IDS,
   LANGUAGE,
@@ -12,12 +12,14 @@ import {
 import { toGenre, toMovie, toProvider } from './mappers';
 import type {
   Genre,
+  Movie,
   MoviePage,
   Provider,
   TmdbGenreListResponse,
   TmdbMovieResult,
   TmdbPagedResponse,
   TmdbProviderListResponse,
+  TmdbWatchProvidersResponse,
 } from './types';
 
 const SORT_BY: Record<SortOption, string> = {
@@ -80,4 +82,32 @@ export async function discoverStreaming(filters: Filters, page: number): Promise
     page: data.page,
     hasMore: data.page < Math.min(data.total_pages, MAX_PAGE),
   };
+}
+
+async function isStreamingInRegion(movieId: number): Promise<boolean> {
+  try {
+    const data = await tmdbFetch<TmdbWatchProvidersResponse>(
+      `/movie/${movieId}/watch/providers`,
+      {},
+      { revalidate: REVALIDATE.movie },
+    );
+    return (data.results[WATCH_REGION]?.flatrate?.length ?? 0) > 0;
+  } catch (error) {
+    if (error instanceof TmdbError && error.status === 404) return false;
+    throw error;
+  }
+}
+
+export async function searchStreaming(query: string): Promise<Movie[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+
+  const data = await tmdbFetch<TmdbPagedResponse<TmdbMovieResult>>(
+    '/search/movie',
+    { query: trimmed, language: LANGUAGE, region: WATCH_REGION, include_adult: 'false', page: 1 },
+    { revalidate: REVALIDATE.listings },
+  );
+
+  const available = await Promise.all(data.results.map((movie) => isStreamingInRegion(movie.id)));
+  return data.results.filter((_, index) => available[index]).map(toMovie);
 }
