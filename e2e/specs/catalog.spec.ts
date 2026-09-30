@@ -42,3 +42,15 @@ test('mostra o rodapé de atribuição', async ({ page }) => {
     }),
   ).toBeVisible();
 });
+
+test('destaque da semana leva aos detalhes e some na busca', async ({ page }) => {
+  await page.goto('/');
+  const featured = page.getByRole('region', { name: 'Em alta nesta semana' });
+  await expect(featured.getByRole('heading', { name: 'Duna' })).toBeVisible();
+
+  await featured.getByRole('link', { name: 'Mais informações' }).click();
+  await expect(page).toHaveURL(/\/filme\/438631$/);
+
+  await page.goto('/?q=duna');
+  await expect(page.getByRole('region', { name: 'Em alta nesta semana' })).toHaveCount(0);
+});

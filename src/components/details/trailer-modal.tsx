@@ -2,14 +2,15 @@
 
 import { useRef, useState } from 'react';
 
-type Props = { trailerKey: string; title: string };
+type Props = { trailerKey: string; title: string; onOpenChange?: (open: boolean) => void };
 
-export function TrailerModal({ trailerKey, title }: Props) {
+export function TrailerModal({ trailerKey, title, onOpenChange }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
 
   const openModal = () => {
     setOpen(true);
+    onOpenChange?.(true);
     dialogRef.current?.showModal(); // modal nativo: prende o foco e fecha com Esc
   };
   const closeModal = () => dialogRef.current?.close();
@@ -26,7 +27,10 @@ export function TrailerModal({ trailerKey, title }: Props) {
       <dialog
         ref={dialogRef}
         aria-label={`Trailer de ${title}`}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setOpen(false);
+          onOpenChange?.(false);
+        }}
         onClick={(event) => {
           if (event.target === event.currentTarget) closeModal();
         }}

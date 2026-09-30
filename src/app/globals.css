@@ -9,6 +9,24 @@
   --color-accent: #f5c518;
   --color-accent-fg: #111111;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --animate-featured-in: featured-in 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+
+  @keyframes featured-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
+  @keyframes featured-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
 }
 
 html {

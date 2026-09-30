@@ -2,6 +2,8 @@ import 'server-only';
 import type { Filters, SortOption } from '../filters';
 import { TmdbError, tmdbFetch } from './client';
 import {
+  FEATURED_CANDIDATES,
+  FEATURED_COUNT,
   FEATURED_PROVIDER_IDS,
   LANGUAGE,
   MAX_PAGE,
@@ -9,8 +11,9 @@ import {
   REVALIDATE,
   WATCH_REGION,
 } from './config';
-import { toGenre, toMovie, toProvider, toMovieDetails } from './mappers';
+import { toFeaturedMovie, toGenre, toMovie, toProvider, toMovieDetails } from './mappers';
 import type {
+  FeaturedMovie,
   Genre,
   Movie,
   MovieDetails,
@@ -129,5 +132,46 @@ export async function getMovieDetails(id: number): Promise<MovieDetails | null> 
   } catch (error) {
     if (error instanceof TmdbError && error.status === 404) return null;
     throw error;
+  }
+}
+
+/**
+ * Destaques da semana: os filmes em alta no TMDB que estão em assinatura no BR.
+ * O carrossel é um enfeite do catálogo — se o TMDB falhar, devolve lista vazia em vez de derrubar a página.
+ */
+export async function getFeaturedMovies(): Promise<FeaturedMovie[]> {
+  try {
+    const trending = await tmdbFetch<TmdbPagedResponse<TmdbMovieResult>>(
+      '/trending/movie/week',
+      { language: LANGUAGE },
+      { revalidate: REVALIDATE.trending },
+    );
+    const candidates = trending.results
+      .filter((movie) => movie.backdrop_path)
+      .slice(0, FEATURED_CANDIDATES);
+
+    const details = await Promise.all(
+      candidates.map((movie) =>
+        tmdbFetch<TmdbMovieDetailsResponse>(
+          `/movie/${movie.id}`,
+          {
+            language: LANGUAGE,
+            append_to_response: 'videos,watch/providers,images',
+            include_video_language: 'pt,en',
+            include_image_language: 'pt,en',
+          },
+          { revalidate: REVALIDATE.movie },
+        ).catch(() => null),
+      ),
+    );
+
+    return details
+      .flatMap((raw) => {
+        const featured = raw && toFeaturedMovie(raw);
+        return featured ? [featured] : [];
+      })
+      .slice(0, FEATURED_COUNT);
+  } catch {
+    return [];
   }
 }

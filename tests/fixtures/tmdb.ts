@@ -182,9 +182,27 @@ export const duneDetails: TmdbMovieDetailsResponse = {
     ],
   },
   'watch/providers': watchProvidersById['438631'],
+  images: {
+    logos: [
+      { file_path: '/duna-logo-en.png', iso_639_1: 'en', aspect_ratio: 4 },
+      { file_path: '/duna-logo-pt.png', iso_639_1: 'pt', aspect_ratio: 3.5 },
+    ],
+  },
 };
 
 export const detailsById: Record<string, TmdbMovieDetailsResponse> = { '438631': duneDetails };
+
+// Trending: só Duna vira destaque (693134 não tem detalhes; 5001 não tem imagem de fundo).
+export const trendingResponse: TmdbPagedResponse<TmdbMovieResult> = {
+  page: 1,
+  results: [
+    makeMovieResult(5001, { backdrop_path: null }),
+    makeMovieResult(693134, { title: 'Duna: Parte Dois', backdrop_path: '/duna2-backdrop.jpg' }),
+    makeMovieResult(438631, { title: 'Duna', backdrop_path: '/duna-backdrop.jpg' }),
+  ],
+  total_pages: 1,
+  total_results: 3,
+};
 
 export const notFoundBody = {
   success: false,

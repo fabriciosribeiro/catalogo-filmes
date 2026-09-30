@@ -8,6 +8,7 @@ import {
   horrorDiscoverResponse,
   notFoundBody,
   providersResponse,
+  trendingResponse,
   watchProvidersById,
 } from '../fixtures/tmdb';
 
@@ -26,6 +27,8 @@ export const handlers: HttpHandler[] = [
     }
     return HttpResponse.json(discoverPage(Number(params.get('page') ?? '1')));
   }),
+
+  http.get(`${API}/trending/movie/week`, () => HttpResponse.json(trendingResponse)),
 
   http.get(`${API}/search/movie`, ({ request }) => {
     const query = new URL(request.url).searchParams.get('query')?.toLowerCase() ?? '';
