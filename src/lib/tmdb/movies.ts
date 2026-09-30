@@ -9,13 +9,15 @@ import {
   REVALIDATE,
   WATCH_REGION,
 } from './config';
-import { toGenre, toMovie, toProvider } from './mappers';
+import { toGenre, toMovie, toProvider, toMovieDetails } from './mappers';
 import type {
   Genre,
   Movie,
+  MovieDetails,
   MoviePage,
   Provider,
   TmdbGenreListResponse,
+  TmdbMovieDetailsResponse,
   TmdbMovieResult,
   TmdbPagedResponse,
   TmdbProviderListResponse,
@@ -110,4 +112,22 @@ export async function searchStreaming(query: string): Promise<Movie[]> {
 
   const available = await Promise.all(data.results.map((movie) => isStreamingInRegion(movie.id)));
   return data.results.filter((_, index) => available[index]).map(toMovie);
+}
+
+export async function getMovieDetails(id: number): Promise<MovieDetails | null> {
+  try {
+    const data = await tmdbFetch<TmdbMovieDetailsResponse>(
+      `/movie/${id}`,
+      {
+        language: LANGUAGE,
+        append_to_response: 'credits,videos,watch/providers',
+        include_video_language: 'pt,en',
+      },
+      { revalidate: REVALIDATE.movie },
+    );
+    return toMovieDetails(data);
+  } catch (error) {
+    if (error instanceof TmdbError && error.status === 404) return null;
+    throw error;
+  }
 }
