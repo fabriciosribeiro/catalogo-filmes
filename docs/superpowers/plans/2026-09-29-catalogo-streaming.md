@@ -16,8 +16,8 @@
    ```bash
    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
    # abra um novo terminal
-   nvm install 22 && nvm alias default 22
-   node -v   # deve mostrar v22.x
+   nvm install 24 && nvm alias default 24
+   node -v   # deve mostrar v24.x
    ```
 2. **Token do TMDB.** Crie uma conta em https://www.themoviedb.org/signup, vá em *Configurações → API* (https://www.themoviedb.org/settings/api), solicite uma chave (uso pessoal/educacional) e copie o **API Read Access Token** (o token longo, "Bearer"). Ele será salvo em `.env.local` na Task 1.
 
@@ -108,7 +108,7 @@ Os testes unitários ficam ao lado do código (`*.test.ts(x)` em `src/`). Arquiv
 **Interfaces:**
 - Produces: scripts `npm run lint | format | format:check | typecheck | test | build`; `tests/msw/server.ts` exporta `server` (MSW `setupServer`); `tests/msw/handlers.ts` exporta `handlers: HttpHandler[]` (vazio por enquanto); alias `@/*` → `src/*`.
 
-- [ ] **Step 1: Confirmar Node 22**
+- [ ] **Step 1: Confirmar Node 24**
 
 Run: `node -v`
 Expected: `v24.x`. Se não for, pare e peça ao usuário os pré-requisitos.
