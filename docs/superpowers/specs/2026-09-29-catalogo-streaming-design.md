@@ -1,7 +1,7 @@
 # EmCartaz — Catálogo de filmes em streaming (Design)
 
 - **Data:** 2026-09-29
-- **Status:** aguardando revisão
+- **Status:** aprovado (2026-09-29)
 - **Nome:** "EmCartaz" é provisório.
 
 ## 1. Objetivo e contexto
@@ -106,7 +106,7 @@ Rodapé com o logo do TMDB, o aviso "Este produto usa a API do TMDB mas não é 
 `page.tsx` converte `searchParams` → `Filters` → `discoverStreaming(filters, 1)`, que chama `/discover/movie` com:
 
 - `watch_region=BR`, `with_watch_monetization_types=flatrate`, `language=pt-BR`
-- `with_watch_providers` = IDs unidos por `|` (OU). Sem provedores selecionados, usa a lista de plataformas principais do Brasil (obtida de `/watch/providers/movie?watch_region=BR`, ordenada por `display_priority`, limitada às 10 primeiras — as mesmas exibidas na faixa de plataformas).
+- `with_watch_providers` = IDs unidos por `|` (OU). Sem provedores selecionados, usa a lista de plataformas principais do Brasil — as mesmas exibidas na faixa de plataformas. Essa lista é uma allowlist fixa de IDs de serviços de assinatura (`FEATURED_PROVIDER_IDS` em `lib/tmdb`), cruzada com `/watch/providers/movie?watch_region=BR` para obter nome e logo; IDs que o TMDB não retornar são descartados. (Usar só o top-N por `display_priority` traria lojas de aluguel/compra, como Google Play e Apple TV, para a faixa.)
 - `with_genres` = IDs unidos por `,` (E)
 - `primary_release_date.gte` / `.lte` a partir do ano
 - `sort_by`: popularidade → `popularity.desc`; nota → `vote_average.desc` com `vote_count.gte=200`; lançamento → `primary_release_date.desc`
