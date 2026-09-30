@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
+import { SearchBox } from './search-box';
 
 export function SiteHeader() {
   return (
@@ -7,6 +9,9 @@ export function SiteHeader() {
         <Link href="/" className="shrink-0 text-lg font-extrabold tracking-tight">
           🎬 <span className="text-accent">Em</span>Cartaz
         </Link>
+        <Suspense fallback={<div className="h-9 flex-1 rounded-full bg-surface" />}>
+          <SearchBox />
+        </Suspense>
       </div>
     </header>
   );
