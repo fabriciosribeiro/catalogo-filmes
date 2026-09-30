@@ -11,7 +11,8 @@
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "next": "15.5.26",
@@ -22,6 +23,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@mswjs/http-middleware": "^0.10.3",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
@@ -38,6 +41,7 @@
     "msw": "^2.15.0",
     "prettier": "^3.9.9",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5",
     "vite": "^7.3.6",
     "vite-tsconfig-paths": "^6.1.1",
