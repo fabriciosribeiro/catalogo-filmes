@@ -6,13 +6,13 @@
 
 **Architecture:** Server Components renderizam cada página a partir da URL. Toda comunicação com o TMDB fica isolada em `src/lib/tmdb/` (somente servidor, cache via `fetch` com `revalidate`) e devolve tipos de domínio. O estado de filtros vive na URL, e `src/lib/filters.ts` é a única fonte da verdade de parse/serialize. A rolagem infinita usa uma Server Action. Não há banco de dados.
 
-**Tech Stack:** Node 22 LTS, Next.js 15 (App Router), React 19, TypeScript strict, Tailwind CSS v4, zod, Vitest 3 + Testing Library + MSW 2, Playwright, GitHub Actions, Vercel.
+**Tech Stack:** Node 24 LTS, Next.js 15 (App Router), React 19, TypeScript strict, Tailwind CSS v4, zod, Vitest 3 + Testing Library + MSW 2, Playwright, GitHub Actions, Vercel.
 
 **Spec:** `docs/superpowers/specs/2026-09-29-catalogo-streaming-design.md` (leia junto com este plano).
 
 ## Pré-requisitos (ações do usuário, antes da Task 1)
 
-1. **Node 22 LTS.** A máquina tem Node 18.19 (fora de suporte; Tailwind v4, jsdom e Playwright atuais pedem Node 20+). Instale via nvm:
+1. **Node 24 LTS (já instalado: v24.21.0 via nvm).** A máquina tem Node 18.19 (fora de suporte; Tailwind v4, jsdom e Playwright atuais pedem Node 20+). Instale via nvm:
    ```bash
    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
    # abra um novo terminal
@@ -23,7 +23,7 @@
 
 ## Global Constraints
 
-- Node 22 LTS (`.nvmrc` = `22`); `next@15` com App Router; TypeScript `strict: true`.
+- Node 24 LTS (`.nvmrc` = `24`). No shell do agente, o Node do sistema é 18: prefixe comandos com `export PATH="$HOME/.nvm/versions/node/v24.21.0/bin:$PATH";` (ou rode `export` uma vez por sessão de Bash); `next@15` com App Router; TypeScript `strict: true`.
 - Toda chamada ao TMDB usa `language=pt-BR` e, quando aplicável, `watch_region=BR` e `with_watch_monetization_types=flatrate`.
 - `TMDB_READ_TOKEN` só existe no servidor: nunca usar prefixo `NEXT_PUBLIC_`. Todo arquivo que chama o TMDB começa com `import 'server-only';`.
 - Somente `src/lib/tmdb/` conhece o formato cru do TMDB. Componentes importam apenas tipos de domínio de `@/lib/tmdb/types` e o helper `@/lib/tmdb/images`.
@@ -111,7 +111,7 @@ Os testes unitários ficam ao lado do código (`*.test.ts(x)` em `src/`). Arquiv
 - [ ] **Step 1: Confirmar Node 22**
 
 Run: `node -v`
-Expected: `v22.x`. Se não for, pare e peça ao usuário os pré-requisitos.
+Expected: `v24.x`. Se não for, pare e peça ao usuário os pré-requisitos.
 
 - [ ] **Step 2: Gerar o scaffold numa pasta irmã e copiar para o repositório**
 
@@ -163,7 +163,7 @@ npm-debug.log*
 
 `.nvmrc`:
 ```
-22
+24
 ```
 
 `.env.example`:
@@ -4139,7 +4139,7 @@ flowchart LR
 
 ## Rodando localmente
 
-Requer Node 22 (`nvm use`) e um [token de leitura do TMDB](https://www.themoviedb.org/settings/api).
+Requer Node 24 (`nvm use`) e um [token de leitura do TMDB](https://www.themoviedb.org/settings/api).
 
 ```bash
 cp .env.example .env.local   # preencha TMDB_READ_TOKEN
