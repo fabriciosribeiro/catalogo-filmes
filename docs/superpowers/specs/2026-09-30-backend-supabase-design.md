@@ -79,7 +79,7 @@ create table public.user_providers (
 );
 ```
 
-- **RLS ligado nas duas tabelas.** As policies de `select`, `insert`, `update` e `delete` são restritas à role `authenticated` com `user_id = (select auth.uid())`. A role `anon` não tem acesso.
+- **RLS ligado nas duas tabelas**, com policies só para a role `authenticated` e `user_id = (select auth.uid())`. A `watchlist` tem `select`, `insert` e `delete` (linhas são imutáveis, sem `update`). A `user_providers` tem `select`, `insert` e `update` (o app nunca apaga; o `on delete cascade` cuida da exclusão da conta). A role `anon` não tem nenhum privilégio nas tabelas.
 - **Limite de 100 filmes por usuário** na `watchlist`, garantido por um trigger `before insert` que levanta uma exceção com código próprio. Ele também é verificado na Server Action para dar uma mensagem amigável.
 - Salvar um filme repetido é um no-op (`on conflict do nothing`).
 - A `watchlist` guarda só o `tmdb_id`; os detalhes vêm do TMDB (cache de 24h). Não há dados duplicados ficando desatualizados.
@@ -157,7 +157,8 @@ Todos os formulários usam Server Actions com zod e funcionam sem JavaScript.
 1. `supabase link --project-ref <ref>` e `supabase db push`.
 2. Authentication → Providers → Email: desligar "Confirm email".
 3. Authentication → URL Configuration: Site URL = domínio da Vercel; Redirect URLs com a Vercel e `http://localhost:3000/**`.
-4. Template "Reset password": o link aponta para `{{ .SiteURL }}/auth/confirmar?token_hash={{ .TokenHash }}&type=recovery`.
-5. Vercel: definir `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+4. Template "Reset password": o link aponta para `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery`. O app envia `redirectTo = <origem>/auth/confirmar`, e o Supabase só aceita origens listadas em Redirect URLs. O mesmo template vale para localhost, E2E e produção.
+5. Authentication → Providers → Email: senha mínima de 8 caracteres.
+6. Vercel: definir `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 
 **README:** atualizar o diagrama de arquitetura e substituir a linha "Sem banco de dados" na tabela de decisões, explicando a mudança (contas de usuário pedem estado persistente; o catálogo continua vindo do TMDB sem índice próprio).
