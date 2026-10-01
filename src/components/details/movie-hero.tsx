@@ -1,12 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { formatRating, formatRuntime } from '@/lib/format';
 import { tmdbImageUrl } from '@/lib/tmdb/images';
 import type { MovieDetails } from '@/lib/tmdb/types';
 import { TrailerModal } from './trailer-modal';
 import { WatchProviders } from './watch-providers';
 
-export function MovieHero({ movie }: { movie: MovieDetails }) {
+export function MovieHero({ movie, children }: { movie: MovieDetails; children?: ReactNode }) {
   const backdrop = tmdbImageUrl(movie.backdropPath, 'w1280');
   const poster = tmdbImageUrl(movie.posterPath, 'w342');
   const meta = [
@@ -55,9 +56,12 @@ export function MovieHero({ movie }: { movie: MovieDetails }) {
             {meta && <span>{meta}</span>}
           </p>
           <WatchProviders providers={movie.streamingProviders} link={movie.watchLink} />
-          {movie.trailerKey && (
-            <div>
-              <TrailerModal trailerKey={movie.trailerKey} title={movie.title} />
+          {(movie.trailerKey || children) && (
+            <div className="flex flex-wrap items-start gap-3">
+              {movie.trailerKey && (
+                <TrailerModal trailerKey={movie.trailerKey} title={movie.title} />
+              )}
+              {children}
             </div>
           )}
         </div>
