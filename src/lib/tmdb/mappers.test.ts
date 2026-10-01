@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
+import { makeMovieDetails } from '../../../tests/fixtures/domain';
 import { duneDetails } from '../../../tests/fixtures/tmdb';
-import { pickTrailerKey, toMovieDetails, releaseYearOf, toMovie, toProvider } from './mappers';
+import {
+  detailsToMovie,
+  pickTrailerKey,
+  toMovieDetails,
+  releaseYearOf,
+  toMovie,
+  toProvider,
+} from './mappers';
 
 describe('releaseYearOf', () => {
   it('extrai o ano', () => expect(releaseYearOf('2021-09-15')).toBe(2021));
@@ -116,6 +124,19 @@ describe('toMovieDetails', () => {
       trailerKey: null,
       streamingProviders: [],
       watchLink: null,
+    });
+  });
+});
+
+describe('detailsToMovie', () => {
+  it('reduz os detalhes ao formato de card', () => {
+    expect(detailsToMovie(makeMovieDetails())).toEqual({
+      id: 438631,
+      title: 'Duna',
+      posterPath: '/duna-poster.jpg',
+      releaseYear: 2021,
+      voteAverage: 7.8,
+      genreIds: [878, 12],
     });
   });
 });

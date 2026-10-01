@@ -4,9 +4,9 @@ import { formatRating } from '@/lib/format';
 import { tmdbImageUrl } from '@/lib/tmdb/images';
 import type { Movie } from '@/lib/tmdb/types';
 
-type Props = { movie: Movie; genreLabel?: string };
+type Props = { movie: Movie; genreLabel?: string; badge?: string };
 
-export function MovieCard({ movie, genreLabel }: Props) {
+export function MovieCard({ movie, genreLabel, badge }: Props) {
   const poster = tmdbImageUrl(movie.posterPath, 'w342');
   const meta = [movie.releaseYear, genreLabel].filter(Boolean).join(' · ');
 
@@ -36,6 +36,11 @@ export function MovieCard({ movie, genreLabel }: Props) {
         {movie.voteAverage > 0 && (
           <span className="absolute top-1.5 right-1.5 rounded bg-accent px-1.5 py-0.5 text-xs font-bold text-accent-fg">
             ★ {formatRating(movie.voteAverage)}
+          </span>
+        )}
+        {badge && (
+          <span className="absolute bottom-1.5 left-1.5 rounded bg-bg/85 px-1.5 py-0.5 text-[11px] font-semibold text-muted">
+            {badge}
           </span>
         )}
       </div>

@@ -4,9 +4,9 @@ import { MovieCard } from './movie-card';
 export const GRID_CLASSES =
   'grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6';
 
-type Props = { movies: Movie[]; genres: Genre[] };
+type Props = { movies: Movie[]; genres: Genre[]; badges?: Partial<Record<number, string>> };
 
-export function MovieGrid({ movies, genres }: Props) {
+export function MovieGrid({ movies, genres, badges }: Props) {
   const genreNames = new Map(genres.map((genre) => [genre.id, genre.name]));
   return (
     <ul className={GRID_CLASSES}>
@@ -15,6 +15,7 @@ export function MovieGrid({ movies, genres }: Props) {
           <MovieCard
             movie={movie}
             genreLabel={movie.genreIds.map((id) => genreNames.get(id)).find(Boolean)}
+            badge={badges?.[movie.id]}
           />
         </li>
       ))}
