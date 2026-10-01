@@ -11,6 +11,7 @@ export type TmdbMovieResult = {
   id: number;
   title: string;
   poster_path: string | null;
+  backdrop_path?: string | null;
   release_date: string;
   vote_average: number;
   genre_ids: number[];
@@ -42,6 +43,8 @@ export type TmdbWatchProvidersResponse = {
 
 export type TmdbVideo = { key: string; site: string; type: string; iso_639_1: string };
 
+export type TmdbImage = { file_path: string; iso_639_1: string | null; aspect_ratio: number };
+
 export type TmdbCastMember = {
   id: number;
   name: string;
@@ -63,6 +66,7 @@ export type TmdbMovieDetailsResponse = {
   credits?: { cast: TmdbCastMember[] };
   videos?: { results: TmdbVideo[] };
   'watch/providers'?: TmdbWatchProvidersResponse;
+  images?: { logos: TmdbImage[] };
 };
 
 // ---------- Tipos de domínio (o que a UI consome) ----------
@@ -104,3 +108,19 @@ export type MovieDetails = {
   streamingProviders: Provider[];
   watchLink: string | null;
 };
+
+/** Logo oficial do título (PNG/SVG com fundo transparente). */
+export type TitleLogo = { path: string; aspectRatio: number };
+
+export type FeaturedMovie = Pick<
+  MovieDetails,
+  | 'id'
+  | 'title'
+  | 'overview'
+  | 'releaseYear'
+  | 'runtime'
+  | 'voteAverage'
+  | 'genres'
+  | 'trailerKey'
+  | 'streamingProviders'
+> & { backdropPath: string; logo: TitleLogo | null };

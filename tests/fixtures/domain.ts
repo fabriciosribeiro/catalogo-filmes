@@ -1,4 +1,4 @@
-import type { Genre, Movie, MovieDetails, Provider } from '@/lib/tmdb/types';
+import type { FeaturedMovie, Genre, Movie, MovieDetails, Provider } from '@/lib/tmdb/types';
 
 export const providers: Provider[] = [
   { id: 8, name: 'Netflix', logoPath: '/netflix.jpg' },
@@ -45,6 +45,26 @@ export function makeMovieDetails(overrides: Partial<MovieDetails> = {}): MovieDe
     trailerKey: 'trailer-pt',
     streamingProviders: [{ id: 1899, name: 'Max', logoPath: '/max.jpg' }],
     watchLink: 'https://www.themoviedb.org/movie/438631-dune/watch?locale=BR',
+    ...overrides,
+  };
+}
+
+export function makeFeaturedMovie(overrides: Partial<FeaturedMovie> = {}): FeaturedMovie {
+  return {
+    id: 438631,
+    title: 'Duna',
+    overview: 'Paul Atreides precisa viajar para o planeta mais perigoso do universo.',
+    backdropPath: '/duna-backdrop.jpg',
+    logo: { path: '/duna-logo-pt.png', aspectRatio: 3.5 },
+    releaseYear: 2021,
+    runtime: 155,
+    voteAverage: 7.8,
+    genres: [
+      { id: 878, name: 'Ficção científica' },
+      { id: 12, name: 'Aventura' },
+    ],
+    trailerKey: 'trailer-pt',
+    streamingProviders: [{ id: 1899, name: 'Max', logoPath: '/max.jpg' }],
     ...overrides,
   };
 }

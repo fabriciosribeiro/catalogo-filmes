@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { CatalogResults } from '@/components/catalog-results';
+import { FeaturedSection, FeaturedSkeleton } from '@/components/featured/featured-section';
 import { FilterBar } from '@/components/filters/filter-bar';
 import { MovieGridSkeleton } from '@/components/movie-grid-skeleton';
 import { parseFilters, serializeFilters, type SearchParamsInput } from '@/lib/filters';
@@ -19,6 +20,10 @@ export default async function CatalogPage({ searchParams }: Props) {
       ) : (
         <>
           <h1 className="sr-only">Filmes em streaming por assinatura no Brasil</h1>
+          {/* Fora da key dos filtros: trocar filtro não recarrega nem reinicia o destaque */}
+          <Suspense fallback={<FeaturedSkeleton />}>
+            <FeaturedSection />
+          </Suspense>
           <FilterBar key={key} filters={filters} providers={providers} genres={genres} />
         </>
       )}

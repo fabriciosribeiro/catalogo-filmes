@@ -7,7 +7,12 @@ export const REVALIDATE = {
   catalogMetadata: 86_400, // provedores e gêneros
   listings: 21_600, // discover e busca
   movie: 86_400, // detalhes e provedores por filme
+  trending: 21_600, // destaques da semana
 } as const;
+
+/** Quantos filmes o carrossel de destaques mostra e quantos candidatos do trending são avaliados. */
+export const FEATURED_COUNT = 5;
+export const FEATURED_CANDIDATES = 20;
 
 /**
  * Serviços de assinatura exibidos na faixa de plataformas, nesta ordem.
