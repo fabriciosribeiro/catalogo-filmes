@@ -50,6 +50,17 @@ describe('WatchlistButton', () => {
     expect(screen.getByRole('button', { name: /Salvar na lista/ })).toBeEnabled();
   });
 
+  it('falha de rede desfaz e mostra o erro sem derrubar a página', async () => {
+    actions.toggleWatchlist.mockRejectedValue(new Error('Failed to fetch'));
+    render(<WatchlistButton tmdbId={42} initialSaved={false} signedIn />);
+
+    await userEvent.click(screen.getByRole('button', { name: /Salvar na lista/ }));
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Não foi possível atualizar sua lista. Tente de novo.',
+    );
+    expect(screen.getByRole('button', { name: /Salvar na lista/ })).toBeEnabled();
+  });
+
   it('remove um filme já salvo', async () => {
     actions.toggleWatchlist.mockResolvedValue({ ok: true, saved: false });
     render(<WatchlistButton tmdbId={42} initialSaved signedIn />);

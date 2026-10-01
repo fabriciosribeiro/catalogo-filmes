@@ -17,6 +17,10 @@ describe('safeRedirectPath', () => {
     'https:evil.com',
     'javascript:alert(1)',
     'filme/1',
+    '/.//evil.com',
+    '/%2e//evil.com',
+    '/a/..//evil.com',
+    '/./\\evil.com',
     '',
   ])('troca %j por "/"', (raw) => {
     expect(safeRedirectPath(raw)).toBe('/');

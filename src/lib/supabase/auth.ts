@@ -1,6 +1,6 @@
 import 'server-only';
 import type { AuthError } from '@supabase/supabase-js';
-import { redirect } from 'next/navigation';
+import { redirect, unstable_rethrow } from 'next/navigation';
 import { cache } from 'react';
 import { createSupabaseServerClient } from './server';
 
@@ -11,12 +11,21 @@ function toResult(error: AuthError | null): AuthResult {
   return error ? { ok: false, code: error.code } : { ok: true };
 }
 
-/** Usuário da sessão, validado no servidor do Supabase (getUser, não getSession). Uma chamada por request. */
+/**
+ * Usuário da sessão, validado no servidor do Supabase (getUser, não getSession). Uma chamada por request.
+ * Qualquer falha (inclusive env ausente) vira "deslogado": o header roda em toda página e não pode derrubar o site.
+ */
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) return null;
-  return { id: data.user.id, email: data.user.email ?? '' };
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) return null;
+    return { id: data.user.id, email: data.user.email ?? '' };
+  } catch (error) {
+    unstable_rethrow(error); // sinais internos do Next (ex.: render dinâmico) não são falhas
+    console.error('Supabase indisponível; seguindo como visitante.', error);
+    return null;
+  }
 });
 
 /** Para páginas protegidas: sem sessão, manda para o login e volta para `returnTo` depois. */

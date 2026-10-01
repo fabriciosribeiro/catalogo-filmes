@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { useOptimistic, useState, useTransition } from 'react';
-import { toggleWatchlist } from '@/app/minha-lista/actions';
+import { toggleWatchlist, type ToggleResult } from '@/app/minha-lista/actions';
 
 type Props = { tmdbId: number; initialSaved: boolean; signedIn: boolean };
+
+const NETWORK_ERROR = 'Não foi possível atualizar sua lista. Tente de novo.';
 
 const baseClasses =
   'inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-wait';
@@ -31,7 +33,11 @@ export function WatchlistButton({ tmdbId, initialSaved, signedIn }: Props) {
     setError(null);
     startTransition(async () => {
       setOptimisticSaved(next);
-      const result = await toggleWatchlist(tmdbId, next);
+      // Falha de rede/servidor vira mensagem, em vez de subir para o error.tsx e derrubar a página
+      const result = await toggleWatchlist(tmdbId, next).catch((): ToggleResult => ({
+        ok: false,
+        message: NETWORK_ERROR,
+      }));
       startTransition(() => {
         if (result.ok) setSaved(result.saved);
         else setError(result.message);
