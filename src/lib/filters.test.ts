@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ALL_PROVIDERS,
   DEFAULT_FILTERS,
   hasActiveFilters,
   MAX_IDS_PER_FILTER,
@@ -120,5 +121,29 @@ describe('hasActiveFilters', () => {
     expect(hasActiveFilters(DEFAULT_FILTERS)).toBe(false);
     expect(hasActiveFilters({ ...DEFAULT_FILTERS, sort: 'nota' })).toBe(true);
     expect(hasActiveFilters({ ...DEFAULT_FILTERS, query: 'duna' })).toBe(true);
+  });
+});
+
+describe('serializeFilters com explicitAllProviders', () => {
+  it('escreve p=todas quando nenhuma plataforma está marcada', () => {
+    expect(
+      serializeFilters({ ...DEFAULT_FILTERS, genres: [27] }, { explicitAllProviders: true }),
+    ).toBe(`p=${ALL_PROVIDERS}&g=27`);
+  });
+
+  it('não muda nada quando há plataformas marcadas', () => {
+    expect(
+      serializeFilters({ ...DEFAULT_FILTERS, providers: [8] }, { explicitAllProviders: true }),
+    ).toBe('p=8');
+  });
+
+  it('busca ignora o marcador', () => {
+    expect(
+      serializeFilters({ ...DEFAULT_FILTERS, query: 'duna' }, { explicitAllProviders: true }),
+    ).toBe('q=duna');
+  });
+
+  it('p=todas é lido como "sem filtro de plataforma"', () => {
+    expect(parseFilters({ p: 'todas' }).providers).toEqual([]);
   });
 });

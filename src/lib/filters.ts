@@ -21,6 +21,11 @@ export const MAX_YEAR = 2100;
 const MAX_QUERY_LENGTH = 100;
 export const MAX_IDS_PER_FILTER = 20;
 
+/** Valor de `p` que significa "todas as plataformas": impede que as plataformas salvas sejam aplicadas. */
+export const ALL_PROVIDERS = 'todas';
+
+export type SerializeOptions = { explicitAllProviders?: boolean };
+
 const idSchema = z.coerce.number().int().positive();
 const yearSchema = z.coerce.number().int().min(MIN_YEAR).max(MAX_YEAR);
 const sortSchema = z.enum(SORT_OPTIONS);
@@ -70,12 +75,13 @@ export function parseFilters(searchParams: SearchParamsInput): Filters {
   };
 }
 
-export function serializeFilters(filters: Filters): string {
+export function serializeFilters(filters: Filters, options: SerializeOptions = {}): string {
   const query = filters.query?.trim();
   if (query) return `q=${encodeURIComponent(query)}`;
 
   const parts: string[] = [];
   if (filters.providers.length) parts.push(`p=${filters.providers.join(',')}`);
+  else if (options.explicitAllProviders) parts.push(`p=${ALL_PROVIDERS}`);
   if (filters.genres.length) parts.push(`g=${filters.genres.join(',')}`);
   if (filters.yearFrom !== undefined || filters.yearTo !== undefined) {
     parts.push(`ano=${filters.yearFrom ?? ''}-${filters.yearTo ?? ''}`);

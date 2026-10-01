@@ -1,15 +1,23 @@
+import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { CatalogResults } from '@/components/catalog-results';
 import { FeaturedSection, FeaturedSkeleton } from '@/components/featured/featured-section';
 import { FilterBar } from '@/components/filters/filter-bar';
 import { MovieGridSkeleton } from '@/components/movie-grid-skeleton';
+import { savedProvidersForCatalog } from '@/lib/catalog-providers';
 import { parseFilters, serializeFilters, type SearchParamsInput } from '@/lib/filters';
+import { resolveProviderRedirect } from '@/lib/provider-redirect';
 import { getGenres, getProviders } from '@/lib/tmdb/movies';
 
 type Props = { searchParams: Promise<SearchParamsInput> };
 
 export default async function CatalogPage({ searchParams }: Props) {
-  const filters = parseFilters(await searchParams);
+  const params = await searchParams;
+  const savedProviders = await savedProvidersForCatalog();
+  const target = resolveProviderRedirect(params, savedProviders);
+  if (target) redirect(target);
+
+  const filters = parseFilters(params);
   const [providers, genres] = await Promise.all([getProviders(), getGenres()]);
   const key = serializeFilters(filters);
 
@@ -24,7 +32,13 @@ export default async function CatalogPage({ searchParams }: Props) {
           <Suspense fallback={<FeaturedSkeleton />}>
             <FeaturedSection />
           </Suspense>
-          <FilterBar key={key} filters={filters} providers={providers} genres={genres} />
+          <FilterBar
+            key={key}
+            filters={filters}
+            providers={providers}
+            genres={genres}
+            savedProviders={savedProviders}
+          />
         </>
       )}
       {/* key: mudar a URL mostra o skeleton e reinicia a rolagem infinita */}
