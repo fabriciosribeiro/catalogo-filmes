@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CastList } from '@/components/details/cast-list';
 import { MovieHero } from '@/components/details/movie-hero';
+import { WatchlistButton } from '@/components/details/watchlist-button';
 import { parseMovieId } from '@/lib/movie-id';
+import { getCurrentUser } from '@/lib/supabase/auth';
+import { isInWatchlist } from '@/lib/supabase/watchlist';
 import { getMovieDetails } from '@/lib/tmdb/movies';
 
 type Props = { params: Promise<{ id: string }> };
@@ -22,9 +25,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MovieDetailsPage({ params }: Props) {
   const movie = await loadMovie((await params).id);
+  const user = await getCurrentUser();
+  // Se o Supabase falhar, o botão começa como "não salvo" em vez de derrubar a página
+  const saved = user ? await isInWatchlist(user.id, movie.id).catch(() => false) : false;
   return (
     <>
-      <MovieHero movie={movie} />
+      <MovieHero movie={movie}>
+        <WatchlistButton tmdbId={movie.id} initialSaved={saved} signedIn={user !== null} />
+      </MovieHero>
       <section className="mt-10 max-w-3xl">
         <h2 className="text-lg font-semibold">Sinopse</h2>
         <p className="mt-2 leading-relaxed text-muted">

@@ -111,3 +111,15 @@ export function toFeaturedMovie(raw: TmdbMovieDetailsResponse): FeaturedMovie | 
     streamingProviders: preferFeaturedProviders(details.streamingProviders),
   };
 }
+
+/** Card do catálogo a partir dos detalhes (usado pela Minha lista, que só guarda IDs). */
+export function detailsToMovie(details: MovieDetails): Movie {
+  return {
+    id: details.id,
+    title: details.title,
+    posterPath: details.posterPath,
+    releaseYear: details.releaseYear,
+    voteAverage: details.voteAverage,
+    genreIds: details.genres.map((genre) => genre.id),
+  };
+}

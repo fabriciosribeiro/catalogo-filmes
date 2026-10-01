@@ -22,6 +22,20 @@ jobs:
       # typecheck depois do build: o build gera next-env.d.ts
       - run: npm run typecheck
 
+  db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,realtime,storage-api,supavisor
+      - run: npm run db:test
+      - name: Tipos do banco atualizados
+        run: npm run db:types && git diff --exit-code src/lib/supabase/database.types.ts
+
   e2e:
     runs-on: ubuntu-latest
     needs: check
@@ -32,6 +46,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - run: npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,realtime,storage-api,supavisor,postgres-meta
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4

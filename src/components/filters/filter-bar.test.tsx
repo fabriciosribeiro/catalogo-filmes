@@ -9,8 +9,15 @@ import { FilterBar } from './filter-bar';
 const nav = vi.hoisted(() => ({ replace: vi.fn(), push: vi.fn() }));
 vi.mock('next/navigation', () => ({ useRouter: () => nav }));
 
-function renderBar(filters = DEFAULT_FILTERS) {
-  return render(<FilterBar filters={filters} providers={providers} genres={genres} />);
+function renderBar(filters = DEFAULT_FILTERS, savedProviders: number[] = []) {
+  return render(
+    <FilterBar
+      filters={filters}
+      providers={providers}
+      genres={genres}
+      savedProviders={savedProviders}
+    />,
+  );
 }
 
 describe('FilterBar', () => {
@@ -74,6 +81,36 @@ describe('FilterBar', () => {
 
     renderBar({ ...DEFAULT_FILTERS, genres: [27], sort: 'nota' });
     await userEvent.click(screen.getByRole('button', { name: 'Limpar filtros' }));
+    expect(nav.replace).toHaveBeenLastCalledWith('/', { scroll: false });
+  });
+});
+
+describe('FilterBar com plataformas salvas', () => {
+  it('desmarcar a última plataforma escreve p=todas', async () => {
+    renderBar({ ...DEFAULT_FILTERS, providers: [8] }, [8]);
+    await userEvent.click(screen.getByRole('button', { name: 'Netflix' }));
+    expect(nav.replace).toHaveBeenLastCalledWith('/?p=todas', { scroll: false });
+  });
+
+  it('"Limpar filtros" também mostra todas as plataformas', async () => {
+    renderBar({ ...DEFAULT_FILTERS, providers: [8], genres: [27] }, [8]);
+    await userEvent.click(screen.getByRole('button', { name: 'Limpar filtros' }));
+    expect(nav.replace).toHaveBeenLastCalledWith('/?p=todas', { scroll: false });
+  });
+
+  it('o chip "Minhas plataformas" reaplica as salvas', async () => {
+    renderBar(DEFAULT_FILTERS, [8, 119]);
+    const chip = screen.getByRole('button', { name: 'Minhas plataformas' });
+    expect(chip).toHaveAttribute('aria-pressed', 'false');
+    await userEvent.click(chip);
+    expect(nav.replace).toHaveBeenLastCalledWith('/?p=8,119', { scroll: false });
+    expect(chip).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('sem plataformas salvas: sem chip e desmarcar volta para "/"', async () => {
+    renderBar({ ...DEFAULT_FILTERS, providers: [8] });
+    expect(screen.queryByRole('button', { name: 'Minhas plataformas' })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Netflix' }));
     expect(nav.replace).toHaveBeenLastCalledWith('/', { scroll: false });
   });
 });
