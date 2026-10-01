@@ -1,7 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
+import { localSupabaseEnv } from './e2e/supabase-env';
 
 const MOCK_PORT = 4010;
 const APP_PORT = 3100;
+const supabase = localSupabaseEnv();
 
 export default defineConfig({
   testDir: './e2e/specs',
@@ -21,7 +23,12 @@ export default defineConfig({
     {
       command: `npm run build && npm run start -- -p ${APP_PORT}`,
       url: `http://localhost:${APP_PORT}`,
-      env: { TMDB_READ_TOKEN: 'e2e-token', TMDB_API_BASE_URL: `http://localhost:${MOCK_PORT}/3` },
+      env: {
+        TMDB_READ_TOKEN: 'e2e-token',
+        TMDB_API_BASE_URL: `http://localhost:${MOCK_PORT}/3`,
+        NEXT_PUBLIC_SUPABASE_URL: supabase.url,
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: supabase.key,
+      },
       timeout: 240_000,
       reuseExistingServer: !process.env.CI,
     },
