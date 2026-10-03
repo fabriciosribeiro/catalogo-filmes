@@ -13,7 +13,7 @@ export default async function PasswordResetPage({ searchParams }: Props) {
       <h1 className="text-xl font-semibold">Recuperar senha</h1>
       {aviso === 'link-invalido' && (
         <p role="alert" className="text-sm text-red-400">
-          O link expirou ou é inválido. Peça um novo abaixo.
+          O link expirou, é inválido ou foi aberto em outro navegador. Peça um novo abaixo.
         </p>
       )}
       <p className="text-sm text-muted">
