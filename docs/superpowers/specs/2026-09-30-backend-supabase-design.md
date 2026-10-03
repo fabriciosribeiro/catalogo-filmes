@@ -157,7 +157,7 @@ Todos os formulários usam Server Actions com zod e funcionam sem JavaScript.
 1. `supabase link --project-ref <ref>` e `supabase db push`.
 2. Authentication → Providers → Email: desligar "Confirm email".
 3. Authentication → URL Configuration: Site URL = domínio da Vercel; Redirect URLs com a Vercel e `http://localhost:3000/**`.
-4. Template "Reset password": o link aponta para `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery`. O app envia `redirectTo = <origem>/auth/confirmar`, e o Supabase só aceita origens listadas em Redirect URLs. O mesmo template vale para localhost, E2E e produção.
+4. Template "Reset password": não editar (o Supabase hospedado exige SMTP próprio para isso). O e-mail padrão usa o fluxo PKCE e chega em `/auth/confirmar?code=…`, que troca o código por sessão (`exchangeCodeForSession`); só funciona no navegador que pediu a recuperação. O template próprio com `token_hash` (`supabase/templates/recovery.html`) continua valendo no local e no CI, e `/auth/confirmar` aceita os dois formatos.
 5. Authentication → Providers → Email: senha mínima de 8 caracteres.
 6. Vercel: definir `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 

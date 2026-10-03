@@ -35,37 +35,59 @@ export async function requireUser(returnTo: string): Promise<CurrentUser> {
   return user;
 }
 
-export async function signInWithPassword(email: string, password: string): Promise<AuthResult> {
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  return toResult(error);
+type SupabaseClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
+
+/**
+ * Executa uma chamada de auth. Erros do Supabase viram `{ ok: false, code }`; exceções de
+ * infraestrutura (env inválido, rede) viram erro genérico no formulário e vão para o log.
+ */
+async function attempt(
+  name: string,
+  call: (supabase: SupabaseClient) => Promise<{ error: AuthError | null }>,
+): Promise<AuthResult> {
+  try {
+    const { error } = await call(await createSupabaseServerClient());
+    return toResult(error);
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error(`Supabase: ${name} falhou.`, error);
+    return { ok: false, code: undefined };
+  }
 }
 
-export async function signUpWithPassword(email: string, password: string): Promise<AuthResult> {
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signUp({ email, password });
-  return toResult(error);
+export function signInWithPassword(email: string, password: string): Promise<AuthResult> {
+  return attempt('signIn', (supabase) => supabase.auth.signInWithPassword({ email, password }));
 }
 
-export async function sendPasswordReset(email: string, redirectTo: string): Promise<AuthResult> {
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
-  return toResult(error);
+export function signUpWithPassword(email: string, password: string): Promise<AuthResult> {
+  return attempt('signUp', (supabase) => supabase.auth.signUp({ email, password }));
 }
 
-export async function verifyRecoveryToken(tokenHash: string): Promise<AuthResult> {
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.verifyOtp({ type: 'recovery', token_hash: tokenHash });
-  return toResult(error);
+export function sendPasswordReset(email: string, redirectTo: string): Promise<AuthResult> {
+  return attempt('resetPassword', (supabase) =>
+    supabase.auth.resetPasswordForEmail(email, { redirectTo }),
+  );
 }
 
-export async function updatePassword(password: string): Promise<AuthResult> {
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.updateUser({ password });
-  return toResult(error);
+/** Link do template próprio (local/CI): `?token_hash=…&type=recovery`. */
+export function verifyRecoveryToken(tokenHash: string): Promise<AuthResult> {
+  return attempt('verifyOtp', (supabase) =>
+    supabase.auth.verifyOtp({ type: 'recovery', token_hash: tokenHash }),
+  );
+}
+
+/**
+ * Link do e-mail padrão do Supabase (produção, sem SMTP próprio): `?code=…` do fluxo PKCE.
+ * Só funciona no navegador que pediu a recuperação, onde ficou o cookie com o code verifier.
+ */
+export function exchangeRecoveryCode(code: string): Promise<AuthResult> {
+  return attempt('exchangeCode', (supabase) => supabase.auth.exchangeCodeForSession(code));
+}
+
+export function updatePassword(password: string): Promise<AuthResult> {
+  return attempt('updatePassword', (supabase) => supabase.auth.updateUser({ password }));
 }
 
 export async function signOut(): Promise<void> {
-  const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
+  await attempt('signOut', (supabase) => supabase.auth.signOut());
 }

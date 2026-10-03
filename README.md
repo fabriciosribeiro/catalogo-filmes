@@ -86,7 +86,7 @@ npm run dev                  # http://localhost:3000
 1. `npx supabase link --project-ref <ref>` e `npx supabase db push`
 2. Authentication → Providers → Email: desligar "Confirm email" e definir senha mínima de 8 caracteres
 3. Authentication → URL Configuration: Site URL = domínio da Vercel; Redirect URLs com o domínio da Vercel e `http://localhost:3000/**`
-4. Authentication → Email Templates → Reset password: link `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery` (veja `supabase/templates/recovery.html`)
+4. Template de e-mail: nada a fazer. O e-mail padrão de redefinição do Supabase já funciona (fluxo PKCE: `/auth/confirmar?code=…`, aberto no mesmo navegador que pediu a recuperação). O template próprio em `supabase/templates/recovery.html` (`token_hash`) só é usado no ambiente local e no CI, porque editar templates no Supabase hospedado exige SMTP próprio
 5. Vercel: definir `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 
 ---

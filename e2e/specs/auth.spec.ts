@@ -61,6 +61,6 @@ test('link de recuperação inválido volta com aviso', async ({ page }) => {
   await page.goto('/auth/confirmar?token_hash=invalido&type=recovery');
   await expect(page).toHaveURL(/\/recuperar-senha\?aviso=link-invalido$/);
   await expect(page.getByRole('main').getByRole('alert')).toHaveText(
-    'O link expirou ou é inválido. Peça um novo abaixo.',
+    'O link expirou, é inválido ou foi aberto em outro navegador. Peça um novo abaixo.',
   );
 });
