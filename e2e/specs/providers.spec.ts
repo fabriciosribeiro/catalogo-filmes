@@ -34,3 +34,20 @@ test('deslogado, /minhas-plataformas pede login', async ({ page }) => {
   await page.goto('/minhas-plataformas');
   await expect(page).toHaveURL(/\/entrar\?voltar=%2Fminhas-plataformas$/);
 });
+
+test('menu da conta fecha ao clicar fora e com Esc', async ({ page }) => {
+  await signUp(page);
+  const account = page.getByText('Minha conta');
+  const item = page.getByRole('link', { name: 'Minhas plataformas' });
+
+  await account.click();
+  await expect(item).toBeVisible();
+  await page.mouse.click(5, 400);
+  await expect(item).toBeHidden();
+
+  await account.click();
+  await expect(item).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(item).toBeHidden();
+  await expect(account).toBeFocused();
+});
